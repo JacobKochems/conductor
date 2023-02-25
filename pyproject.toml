@@ -1,0 +1,25 @@
+# -----------------------------------------------------------------------------
+# Conductor - orchestrate your scripts' execution
+# Copyright (C) 2023  Jacob Kochems
+# SPDX-License-Identifier: GPL-3.0-or-later
+# -----------------------------------------------------------------------------
+
+[tool.poetry]
+name = "conductor"
+version = "0.1.0"
+description = "Run all your other scripts in the right order"
+authors = ["Jacob Kochems"]
+license = "GPL-3.0-or-later"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.2.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+conductor = "conductor.main:cli"

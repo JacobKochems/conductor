@@ -1,0 +1,3 @@
+conductor.d/
+__pycache__
+poetry.*

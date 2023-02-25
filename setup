@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#
+#------------------------------------------------------------------------------
+# Conductor - orchestrate your scripts' execution
+# Copyright (C) 2023  Jacob Kochems
+# SPDX-License-Identifier: GPL-3.0-or-later
+#------------------------------------------------------------------------------
+
+PRJNAME="conductor"
+
+setup_venv () {
+	mv README.rst README.md 2> /dev/null || true
+	poetry add -D pytest@latest &&
+	poetry update &&
+	poetry install &&
+	if ! grep -q "tool.poetry.scripts" pyproject.toml; then
+		echo "\n[tool.poetry.scripts]" >> pyproject.toml
+		echo "$PRJNAME = \"${PRJNAME}.main:cli\"" >> pyproject.toml
+	fi
+}
+
+setup_clean () {
+	rm -rf -- dist ./"$PRJNAME"/__pycache__ tests/__pycache__
+}
+
+setup_purge () {
+	VENV=$(poetry env list --full-path | cut -d ' ' -f 1) &&
+    if [ $VENV ]; then
+    	rm -rf -- "$VENV" &&
+	    rm -f -- poetry.*
+    fi
+}
+

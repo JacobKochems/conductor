@@ -1,4 +1,4 @@
-Conductor
+conductor
 =========
 Conductor orchestrates your bootstrap-/setup-/config-scripts'
 execution order by recursively resolving the in-script declared
@@ -15,7 +15,7 @@ Installation
 ```shell
 curl -fLo /your/custom/path https://raw.githubusercontent.com/JacobKochems/conductor/main/conductor.py && chmod a+x /your/custom/path
 ```
-**YADM** - as a [bootstraper](https://yadm.io/docs/bootstrap) for the yadm dotfile manager
+**yadm** - as a [bootstraper](https://yadm.io/docs/bootstrap) for the yadm dotfile manager
 ```shell
 curl -fLo ~/.config/yadm/bootstrap https://raw.githubusercontent.com/JacobKochems/conductor/main/conductor.py && chmod a+x ~/.config/yadm/bootstrap && mkdir ~/.config/yadm/bootstrap.d
 ```

@@ -6,7 +6,7 @@ dependencies into a dependency ordered list and executes it.
 
 Caution
 -------
-This is a very early version. Something I cobbled together in a weekend.
+This is a very early version. Something I cobbled together on a weekend.
 It has seen very little real application yet. **Use it at your own risk.**
 
 Installation

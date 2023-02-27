@@ -22,7 +22,7 @@ curl -fLo ~/.config/yadm/bootstrap https://raw.githubusercontent.com/JacobKochem
 
 Usage
 -----
-1. Choose a name for the Conductor script, let's say: `setup`
+1. Choose a name for the conductor script, let's say: `setup`
 2. Create a directory in the same folder named: `setup.d`
 3. You declare what a given script depends on by adding the keyphrase
 `!depends_on:` followed by its dependencies, somewhere in the script.

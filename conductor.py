@@ -105,8 +105,9 @@ def main(this, msg):
 if __name__ == "__main__":
 
     def msg(msg_text, status=""):
+        sep = " - " if status else ""
         print(f'{os.path.basename(sys.argv[0])}:',
-              f"{status} - {msg_text}",
+              f"{status}{sep}{msg_text}",
               file=sys.stderr if status else sys.stdout)
         return
 

@@ -19,7 +19,8 @@ files_and_content = {  # create files a..g with dependency content
     'd':  '#!/bin/bash\n#leaf               \necho d\n',
     'e': f'#!/bin/bash\n#leaf\n# {KEYPHRASE}\necho e\n',
     'f': f'#!/bin/bash\n#leaf\n#{KEYPHRASE} \necho f\n',
-    'g': '',
+    'g':  '#!/bin/bash\nexit 1',
+    'h':  '#!/bin/bash\necho $0\n',
 }
 for file, content in files_and_content.items():
     path = DIRECTORY+file
@@ -43,6 +44,6 @@ def test_get_playbook():
 
 def test_get_playlist():
     playlist = [DIRECTORY+file
-                for file in ['d', 'e', 'f', 'c', 'a', 'b', 'g']]
+                for file in ['d', 'e', 'f', 'c', 'a', 'b', 'g', 'h']]
     playbook = get_playbook(DIRECTORY)
     assert get_playlist(playbook.keys(), playbook) == playlist

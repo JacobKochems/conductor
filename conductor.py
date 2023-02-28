@@ -73,31 +73,41 @@ def get_playlist(plays, playbook, playlist=[]):
     return playlist
 
 
-def main(name):
-    ME = f'{os.path.basename(name)}'
-    BLAME_LINK = f'{name}.blames'
+def try_symlink(src, dst, msg):
+    msg("Trying to create a symlink ...", "INFO")
+    try:
+        os.symlink(src, dst)
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            msg("File already exists", "FAILED")
+        else:
+            msg("Error Unknown", "FAILED")
+        return 1
+    msg(f"{dst} -> {src}  Done.", "INFO")
+    return
 
-    playbook = get_playbook(name+'.d/')
+
+def main(this, msg):
+    BLAME_LINK = f'{this}.blame'
+
+    playbook = get_playbook(this+'.d/')
 
     for play in get_playlist(playbook.keys(), playbook):
         if os.system(play) != 0:
-            print(f'{ME}:', f"ERROR in {play} - Catched non zero exit status")
-            print(f'{ME}:', "Trying to create a symlink ...")
-            try:
-                os.symlink(play, BLAME_LINK)
-            except OSError as e:
-                if e.errno == errno.EEXIST:
-                    print(f'{ME}:', "FAILED - File already exists")
-                else:
-                    print(f'{ME}:', "FAILED - Error Unknown")
-                exit(1)
-            print(f'{ME}:', f"{BLAME_LINK} -> {play}  Done.")
-            return
+            msg("Catched non zero exit status", f"ERROR in {play}")
+            return try_symlink(play, BLAME_LINK, msg)
     if os.path.exists(BLAME_LINK):
-        print(f'{ME}:', "Continuation successful. Please remove the symlink.")
+        msg("Continuation successful. Please remove the symlink.")
         # os.remove(BLAME_LINK)
         return
 
 
 if __name__ == "__main__":
-    main(sys.argv[0])
+
+    def msg(msg_text, status=""):
+        print(f'{os.path.basename(sys.argv[0])}:',
+              f"{status} - {msg_text}",
+              file=sys.stderr if status else sys.stdout)
+        return
+
+    exit(main(sys.argv[0], msg))

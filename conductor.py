@@ -73,6 +73,16 @@ def get_playlist(plays, playbook, playlist=[]):
     return playlist
 
 
+def Msg(this):
+    def msg(msg_text, status=""):
+        sep = " - " if status else ""
+        print(f'{os.path.basename(this)}:',
+              f"{status}{sep}{msg_text}",
+              file=sys.stderr if status else sys.stdout)
+        return
+    return msg
+
+
 def try_symlink(src, dst, msg):
     msg("Trying to create a symlink ...", "INFO")
     try:
@@ -103,12 +113,5 @@ def main(this, msg):
 
 
 if __name__ == "__main__":
-
-    def msg(msg_text, status=""):
-        sep = " - " if status else ""
-        print(f'{os.path.basename(sys.argv[0])}:',
-              f"{status}{sep}{msg_text}",
-              file=sys.stderr if status else sys.stdout)
-        return
-
-    exit(main(sys.argv[0], msg))
+    this = sys.argv[0]
+    exit(main(this, Msg(this)))

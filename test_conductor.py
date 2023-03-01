@@ -14,7 +14,7 @@ APP = './conductor'
 DIRECTORY = './conductor.d/'
 
 
-# ---( setup test environment )------------------------------------------------
+# ---( functions for test environment setup and teardown )---------------------
 def write_to_files(files_and_content: dict[str, str]):
     os.makedirs(DIRECTORY, exist_ok=True)
     for file, content in files_and_content.items():
@@ -22,6 +22,11 @@ def write_to_files(files_and_content: dict[str, str]):
         with open(path, "w") as f:
             f.write(content)
         os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
+
+
+def delete_files(files: list[str]):
+    for file in files:
+        os.remove(DIRECTORY+file)
 
 
 # ---( run the tests )---------------------------------------------------------
@@ -41,6 +46,8 @@ class TestUnits:
     @pytest.fixture(autouse=True, scope='class')
     def write_scripts(self, files_and_content):
         write_to_files(files_and_content)
+        yield
+        delete_files(list(files_and_content.keys()))
 
     def test_get_files_recursively(self, files_and_content):
         files = get_files_recursively(DIRECTORY)

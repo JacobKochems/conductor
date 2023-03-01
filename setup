@@ -10,7 +10,7 @@ PRJNAME="conductor"
 
 setup_venv () {
 	mv README.rst README.md 2> /dev/null || true
-	poetry add -D pytest@latest &&
+	poetry add --group=dev pytest@latest &&
 	poetry update &&
 	poetry install &&
 	if ! grep -q "tool.poetry.scripts" pyproject.toml; then
@@ -30,4 +30,3 @@ setup_purge () {
 	    rm -f -- poetry.*
     fi
 }
-

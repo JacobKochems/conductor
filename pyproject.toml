@@ -14,9 +14,6 @@ license = "GPL-3.0-or-later"
 [tool.poetry.dependencies]
 python = "^3.9"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.2.1"
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
 

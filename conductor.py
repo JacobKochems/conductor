@@ -82,7 +82,7 @@ def Msg(this):
     return msg
 
 
-def try_symlink(src, dst, msg):
+def try_symlink(src, dst, msg) -> bool:
     msg("Trying to create a symlink ...", "INFO")
     try:
         os.symlink(src, dst)
@@ -91,13 +91,14 @@ def try_symlink(src, dst, msg):
             msg("File already exists", "FAILED")
         else:
             msg("Error Unknown", "FAILED")
-        return 1
+        return False
     msg(f"{dst} -> {src}  Done.", "INFO")
-    return
+    return True
 
 
-def main(this, msg):
+def main(this) -> bool:
     BLAME_LINK = f'{this}.blame'
+    msg = Msg(this)
 
     playbook = get_playbook(this+'.d/')
 
@@ -108,9 +109,8 @@ def main(this, msg):
     if os.path.exists(BLAME_LINK):
         msg("Continuation successful. Please remove the symlink.")
         # os.remove(BLAME_LINK)
-        return
+    return True
 
 
 if __name__ == "__main__":
-    this = sys.argv[0]
-    exit(main(this, Msg(this)))
+    exit(0 if main(sys.argv[0]) else 1)

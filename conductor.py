@@ -79,7 +79,6 @@ def Msg(this):
         print(f'{os.path.basename(this)}:',
               f"{status}{sep}{msg_text}",
               file=sys.stderr if status else sys.stdout)
-        return
     return msg
 
 

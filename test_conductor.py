@@ -6,9 +6,10 @@
 
 import os
 import stat
+import shutil
 import pytest
 from conductor import KEYPHRASE, get_files_recursively, get_playbook, \
-                      get_playlist
+                      get_playlist, main
 
 APP = './conductor'
 DIRECTORY = './conductor.d/'
@@ -24,31 +25,31 @@ def write_to_files(files_and_content: dict[str, str]):
         os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
 
 
-def delete_files(files: list[str]):
-    for file in files:
-        os.remove(DIRECTORY+file)
+def delete_files_in(dir: str):
+    shutil.rmtree(dir)
+
+
+@pytest.fixture(scope='class')
+def files_and_content():
+    return {  # create files a..g with dependency content
+            'a': f'#!/bin/bash\n#{KEYPHRASE} d,e,c  \necho a\n',
+            'b': f'#!/bin/bash\n#{KEYPHRASE}d,f     \necho b\n',
+            'c': f'#!/bin/bash\n#{KEYPHRASE} d,e, f \necho c\n',
+            'd':  '#!/bin/bash\n#leaf               \necho d\n',
+            'e': f'#!/bin/bash\n#leaf\n# {KEYPHRASE}\necho e\n',
+            'f': f'#!/bin/bash\n#leaf\n#{KEYPHRASE} \necho f\n',
+            'g':  ''}
+
+
+@pytest.fixture(autouse=True, scope='class')
+def write_scripts(files_and_content):
+    write_to_files(files_and_content)
+    yield
+    delete_files_in(DIRECTORY)
 
 
 # ---( run the tests )---------------------------------------------------------
 class TestUnits:
-    @pytest.fixture(scope='class')
-    def files_and_content(self):
-        return {  # create files a..g with dependency content
-                'a': f'#!/bin/bash\n#{KEYPHRASE} d,e,c  \necho a\n',
-                'b': f'#!/bin/bash\n#{KEYPHRASE}d,f     \necho b\n',
-                'c': f'#!/bin/bash\n#{KEYPHRASE} d,e, f \necho c\n',
-                'd':  '#!/bin/bash\n#leaf               \necho d\n',
-                'e': f'#!/bin/bash\n#leaf\n# {KEYPHRASE}\necho e\n',
-                'f': f'#!/bin/bash\n#leaf\n#{KEYPHRASE} \necho f\n',
-                'g':  '',
-        }
-
-    @pytest.fixture(autouse=True, scope='class')
-    def write_scripts(self, files_and_content):
-        write_to_files(files_and_content)
-        yield
-        delete_files(list(files_and_content.keys()))
-
     def test_get_files_recursively(self, files_and_content):
         files = get_files_recursively(DIRECTORY)
         # check a sample item

@@ -15,7 +15,7 @@ APP = './conductor'
 DIRECTORY = './conductor.d/'
 
 
-# ---( functions for test environment setup and teardown )---------------------
+# ---( Functions for Test Environment Setup and Teardown )---------------------
 def write_to_files(files_and_content: dict[str, str]):
     os.makedirs(DIRECTORY, exist_ok=True)
     for file, content in files_and_content.items():
@@ -48,7 +48,7 @@ def write_scripts(files_and_content):
     delete_files_in(DIRECTORY)
 
 
-# ---( run the tests )---------------------------------------------------------
+# ---( The Tests )-------------------------------------------------------------
 class TestUnits:
     def test_get_files_recursively(self, files_and_content):
         files = get_files_recursively(DIRECTORY)

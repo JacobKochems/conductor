@@ -105,7 +105,8 @@ def main(this) -> bool:
     for play in get_playlist(playbook.keys(), playbook):
         if os.system(play) != 0:
             msg("Catched non zero exit status", f"ERROR in {play}")
-            return try_symlink(play, BLAME_LINK, msg)
+            # try_symlink(play, BLAME_LINK, msg)
+            return False
     if os.path.exists(BLAME_LINK):
         msg("Continuation successful. Please remove the symlink.")
         # os.remove(BLAME_LINK)

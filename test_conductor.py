@@ -65,3 +65,17 @@ class TestUnits:
                     for file in ['d', 'e', 'f', 'c', 'a', 'b', 'g']]
         playbook = get_playbook(DIRECTORY)
         assert get_playlist(playbook.keys(), playbook) == playlist
+
+
+class TestIntegration:
+    @pytest.fixture()
+    def _files_and_content(self, files_and_content):
+        return files_and_content.copy()
+
+    def test_all_jobs_complete(self):
+        assert main(APP) is True
+
+    def test_a_job_fails(self, _files_and_content):
+        _files_and_content['a'] += 'exit 1\n'
+        write_to_files(_files_and_content)
+        assert main(APP) is False

@@ -12,14 +12,14 @@ from conductor import KEYPHRASE, get_files_recursively, get_playbook, \
                       get_playlist, main
 
 APP = './conductor'
-DIRECTORY = './conductor.d/'
+BIN_DIR = './conductor.d/'
 
 
 # ---( Functions for Test Environment Setup and Teardown )---------------------
 def write_to_files(files_and_content: dict[str, str]):
-    os.makedirs(DIRECTORY, exist_ok=True)
+    os.makedirs(BIN_DIR, exist_ok=True)
     for file, content in files_and_content.items():
-        path = DIRECTORY+file
+        path = BIN_DIR+file
         with open(path, "w") as f:
             f.write(content)
         os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
@@ -45,25 +45,25 @@ def files_and_content():
 def write_scripts(files_and_content):
     write_to_files(files_and_content)
     yield
-    delete_files_in(DIRECTORY)
+    delete_files_in(BIN_DIR)
 
 
 # ---( The Tests )-------------------------------------------------------------
 class TestUnits:
     def test_get_files_recursively(self, files_and_content):
-        files = get_files_recursively(DIRECTORY)
+        files = get_files_recursively(BIN_DIR)
         # check a sample item
-        assert f'{DIRECTORY}a' in files
+        assert f'{BIN_DIR}a' in files
         # check for expected number of items
         assert len(files) == len(files_and_content)
 
     def test_get_playbook(self):
-        assert f'{DIRECTORY}d' in get_playbook(DIRECTORY)[f'{DIRECTORY}a']
+        assert f'{BIN_DIR}d' in get_playbook(BIN_DIR)[f'{BIN_DIR}a']
 
     def test_get_playlist(self):
-        playlist = [DIRECTORY+file
+        playlist = [BIN_DIR+file
                     for file in ['d', 'e', 'f', 'c', 'a', 'b', 'g']]
-        playbook = get_playbook(DIRECTORY)
+        playbook = get_playbook(BIN_DIR)
         assert get_playlist(playbook.keys(), playbook) == playlist
 
 

@@ -11,15 +11,16 @@ import pytest
 from conductor import KEYPHRASE, get_files_recursively, get_playbook, \
                       get_playlist, main
 
-APP = './conductor'
-BIN_DIR = './conductor.d/'
+NAME = 'conductor'
+APP = f'./{NAME}'
+BIN_DIR = f'./{NAME}.d'
 
 
 # ---( Functions for Test Environment Setup and Teardown )---------------------
 def write_to_files(files_and_content: dict[str, str]):
     os.makedirs(BIN_DIR, exist_ok=True)
     for file, content in files_and_content.items():
-        path = BIN_DIR+file
+        path = f'{BIN_DIR}/{file}'
         with open(path, "w") as f:
             f.write(content)
         os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
@@ -53,15 +54,15 @@ class TestUnits:
     def test_get_files_recursively(self, files_and_content):
         files = get_files_recursively(BIN_DIR)
         # check a sample item
-        assert f'{BIN_DIR}a' in files
+        assert f'{BIN_DIR}/a' in files
         # check for expected number of items
         assert len(files) == len(files_and_content)
 
     def test_get_playbook(self):
-        assert f'{BIN_DIR}d' in get_playbook(BIN_DIR)[f'{BIN_DIR}a']
+        assert f'{BIN_DIR}/d' in get_playbook(BIN_DIR)[f'{BIN_DIR}/a']
 
     def test_get_playlist(self):
-        playlist = [BIN_DIR+file
+        playlist = [f'{BIN_DIR}/{file}'
                     for file in ['d', 'e', 'f', 'c', 'a', 'b', 'g']]
         playbook = get_playbook(BIN_DIR)
         assert get_playlist(playbook.keys(), playbook) == playlist

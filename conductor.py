@@ -49,7 +49,7 @@ def get_dependencies(file, directory):
         content = file.read()
 
     match = re.findall(fr"{KEYPHRASE}[ \t]*(\w+.+)\b", content)
-    return [directory+dep
+    return [os.path.join(directory, dep)
             for dep in re.split(r"[ ,\t]+", match[0])] if match else None
 
 

@@ -21,6 +21,7 @@
 
 import os
 import sys
+import stat
 import re
 import json
 from collections import OrderedDict
@@ -32,6 +33,8 @@ EXCLUSION_PATTERN = ["##", "README", "readme"]
 EXCLUSION_SUFFIX = [
     "~", ".md", ".lst", ".off", ".false", ".disabled",
     ".archive", ".archived", ".deprecated"]
+
+BIN_SUFFIX = ['.sh', '.py']
 
 KEYPHRASE = '!depends_on:'
 CACHE_SUFFIX = '-job.cache'
@@ -45,6 +48,15 @@ def get_files_recursively(directory):
             paths.append(path)
     paths.sort()
     return paths
+
+
+def set_exec_permissions(directory) -> int:
+    count = 0
+    for file in get_files_recursively(directory):
+        if any(file.endswith(s) for s in BIN_SUFFIX):
+            os.chmod(file, os.stat(file).st_mode | stat.S_IEXEC)
+            count += 1
+    return count
 
 
 def get_dependencies(file, directory):
@@ -92,14 +104,15 @@ def cache_jobs(playlist, filename):
 
 def load_cache(filename):
     with open(filename, 'r') as f:
-        return json.loads(f.read())
+        return json.load(f)
 
 
 def main(this) -> bool:
     CACHE = f'{this}{CACHE_SUFFIX}'
     msg = Msg(this)
 
-    playbook = get_playbook(this+'.d/')
+    set_exec_permissions(this+'.d')
+    playbook = get_playbook(this+'.d')
     if os.path.exists(CACHE):
         playlist = load_cache(CACHE)
         os.remove(CACHE)

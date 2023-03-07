@@ -5,11 +5,10 @@
 # -----------------------------------------------------------------------------
 
 import os
-import stat
 import shutil
 import pytest
 from conductor import KEYPHRASE, CACHE_SUFFIX, get_files_recursively, \
-                      get_playbook, get_playlist, main
+                      set_exec_permissions, get_playbook, get_playlist, main
 
 NAME = 'conductor'
 APP = f'./{NAME}'
@@ -24,7 +23,6 @@ def write_to_files(files_and_content: dict[str, str]):
         path = f'{BIN_DIR}/{file}'
         with open(path, "w") as f:
             f.write(content)
-        os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
 
 
 def delete_files_in(dir: str):
@@ -34,13 +32,14 @@ def delete_files_in(dir: str):
 @pytest.fixture(scope='class')
 def files_and_content():
     return {  # create files a..g with dependency content
-            'a': f'#!/bin/bash\n#{KEYPHRASE} d,e,c  \necho a\n',
-            'b': f'#!/bin/bash\n#{KEYPHRASE}d,f     \necho b\n',
-            'c': f'#!/bin/bash\n#{KEYPHRASE} d,e, f \necho c\n',
-            'd':  '#!/bin/bash\n#leaf               \necho d\n',
-            'e': f'#!/bin/bash\n#leaf\n# {KEYPHRASE}\necho e\n',
-            'f': f'#!/bin/bash\n#leaf\n#{KEYPHRASE} \necho f\n',
-            'g':  ''}
+        'a':    f'#!/bin/bash\n#{KEYPHRASE} d.sh,e.sh,c.sh  \necho a\n',
+        'a.sh': f'#!/bin/bash\n#{KEYPHRASE} d.sh,e.sh,c.sh  \necho a.sh\n',
+        'b.sh': f'#!/bin/bash\n#{KEYPHRASE}d.sh,f.sh        \necho b.sh\n',
+        'c.sh': f'#!/bin/bash\n#{KEYPHRASE} d.sh,e.sh, f.sh \necho c.sh\n',
+        'd.sh':  '#!/bin/bash\n#leaf                        \necho d.sh\n',
+        'e.sh': f'#!/bin/bash\n#leaf\n# {KEYPHRASE}         \necho e.sh\n',
+        'f.sh': f'#!/bin/bash\n#leaf\n#{KEYPHRASE}          \necho f.sh\n',
+        'g.sh':  ''}
 
 
 @pytest.fixture(autouse=True, scope='class')
@@ -66,11 +65,14 @@ class TestUnits:
         # check for expected number of items
         assert len(files) == len(files_and_content)
 
+    def test_set_exec_permissions(self, files_and_content):
+        assert set_exec_permissions(BIN_DIR) == len(files_and_content) - 1
+
     def test_get_playbook(self):
-        assert f'{BIN_DIR}/d' in get_playbook(BIN_DIR)[f'{BIN_DIR}/a']
+        assert f'{BIN_DIR}/d.sh' in get_playbook(BIN_DIR)[f'{BIN_DIR}/a.sh']
 
     def test_get_playlist(self):
-        playlist = [f'{BIN_DIR}/{file}'
+        playlist = [f'{BIN_DIR}/{file}.sh'
                     for file in ['d', 'e', 'f', 'c', 'a', 'b', 'g']]
         playbook = get_playbook(BIN_DIR)
         assert get_playlist(playbook.keys(), playbook) == playlist
@@ -86,7 +88,7 @@ class TestIntegration:
 
     def test_a_job_fails(self, _files_and_content):
         # make a job fail
-        _files_and_content['a'] += 'exit 1\n'
+        _files_and_content['a.sh'] += 'exit 1\n'
         write_to_files(_files_and_content)
         # first encounter of failed job should result in abort ..
         assert main(APP) is False
@@ -96,7 +98,7 @@ class TestIntegration:
         assert main(APP) is False
         assert os.path.exists(CACHE)
         # make the failed job pass trivially
-        _files_and_content['a'] = ''
+        _files_and_content['a.sh'] = ''
         write_to_files(_files_and_content)
         # now we expect success for all remaining jobs ..
         assert main(APP) is True

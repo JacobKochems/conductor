@@ -15,6 +15,8 @@ APP = f'./{NAME}'
 BIN_DIR = f'./{NAME}.d'
 CACHE = f'{APP}{CACHE_SUFFIX}'
 
+DEBUG = False
+
 
 # ---( Functions for Test Environment Setup and Teardown )---------------------
 def write_to_files(files_and_content: dict[str, str]):
@@ -46,14 +48,16 @@ def files_and_content():
 def write_scripts(files_and_content):
     write_to_files(files_and_content)
     yield
-    delete_files_in(BIN_DIR)
+    if not DEBUG:
+        delete_files_in(BIN_DIR)
 
 
 @pytest.fixture(autouse=True, scope='module')
 def clean_up():
     yield
-    if os.path.exists(CACHE):
-        os.remove(CACHE)
+    if not DEBUG:
+        if os.path.exists(CACHE):
+            os.remove(CACHE)
 
 
 # ---( The Tests )-------------------------------------------------------------

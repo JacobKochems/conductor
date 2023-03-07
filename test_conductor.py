@@ -85,7 +85,20 @@ class TestIntegration:
         assert main(APP) is True
 
     def test_a_job_fails(self, _files_and_content):
+        # make a job fail
         _files_and_content['a'] += 'exit 1\n'
         write_to_files(_files_and_content)
+        # first encounter of failed job should result in abort ..
+        assert main(APP) is False
+        # .. and produce a cache file of remaining jobs
+        assert os.path.exists(CACHE)
+        # if failed job continues to fail we expect the same outcome
         assert main(APP) is False
         assert os.path.exists(CACHE)
+        # make the failed job pass trivially
+        _files_and_content['a'] = ''
+        write_to_files(_files_and_content)
+        # now we expect success for all remaining jobs ..
+        assert main(APP) is True
+        # .. and the cache file to be removed
+        assert not os.path.exists(CACHE)

@@ -90,17 +90,27 @@ def cache_jobs(playlist, filename):
         json.dump(playlist, f)
 
 
+def load_cache(filename):
+    with open(filename, 'r') as f:
+        return json.loads(f.read())
+
+
 def main(this) -> bool:
     CACHE = f'{this}{CACHE_SUFFIX}'
     msg = Msg(this)
 
     playbook = get_playbook(this+'.d/')
-    playlist = get_playlist(playbook.keys(), playbook)
+    if os.path.exists(CACHE):
+        playlist = load_cache(CACHE)
+        os.remove(CACHE)
+    else:
+        playlist = get_playlist(playbook.keys(), playbook)
 
     for play in playlist:
         if os.system(play) != 0:
             msg("Catched non zero exit status", f"ERROR in {play}")
             cache_jobs(playlist[playlist.index(play):], CACHE)
+            msg(f"Remaining jobs written to: {CACHE}", "INFO")
             return False
     return True
 

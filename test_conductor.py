@@ -8,12 +8,13 @@ import os
 import stat
 import shutil
 import pytest
-from conductor import KEYPHRASE, get_files_recursively, get_playbook, \
-                      get_playlist, main
+from conductor import KEYPHRASE, CACHE_SUFFIX, get_files_recursively, \
+                      get_playbook, get_playlist, main
 
 NAME = 'conductor'
 APP = f'./{NAME}'
 BIN_DIR = f'./{NAME}.d'
+CACHE = f'{APP}{CACHE_SUFFIX}'
 
 
 # ---( Functions for Test Environment Setup and Teardown )---------------------
@@ -49,6 +50,13 @@ def write_scripts(files_and_content):
     delete_files_in(BIN_DIR)
 
 
+@pytest.fixture(autouse=True, scope='module')
+def clean_up():
+    yield
+    if os.path.exists(CACHE):
+        os.remove(CACHE)
+
+
 # ---( The Tests )-------------------------------------------------------------
 class TestUnits:
     def test_get_files_recursively(self, files_and_content):
@@ -80,3 +88,4 @@ class TestIntegration:
         _files_and_content['a'] += 'exit 1\n'
         write_to_files(_files_and_content)
         assert main(APP) is False
+        assert os.path.exists(CACHE)

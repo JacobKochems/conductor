@@ -22,16 +22,19 @@
 import os
 import sys
 import re
-import errno
+import json
 from collections import OrderedDict
 
 # this matches anywhere in a filename
 EXCLUSION_PATTERN = ["##", "README", "readme"]
 
 # this matches only at the end of a filename
-EXCLUSION_SUFFIX = ["~", ".md", ".lst", ".off", ".false", ".disabled"]
+EXCLUSION_SUFFIX = [
+    "~", ".md", ".lst", ".off", ".false", ".disabled",
+    ".archive", ".archived", ".deprecated"]
 
 KEYPHRASE = '!depends_on:'
+CACHE_SUFFIX = '-job.cache'
 
 
 def get_files_recursively(directory):
@@ -82,34 +85,23 @@ def Msg(this):
     return msg
 
 
-def try_symlink(src, dst, msg) -> bool:
-    msg("Trying to create a symlink ...", "INFO")
-    try:
-        os.symlink(src, dst)
-    except OSError as e:
-        if e.errno == errno.EEXIST:
-            msg("File already exists", "FAILED")
-        else:
-            msg("Error Unknown", "FAILED")
-        return False
-    msg(f"{dst} -> {src}  Done.", "INFO")
-    return True
+def cache_jobs(playlist, filename):
+    with open(filename, 'w') as f:
+        json.dump(playlist, f)
 
 
 def main(this) -> bool:
-    BLAME_LINK = f'{this}.blame'
+    CACHE = f'{this}{CACHE_SUFFIX}'
     msg = Msg(this)
 
     playbook = get_playbook(this+'.d/')
+    playlist = get_playlist(playbook.keys(), playbook)
 
-    for play in get_playlist(playbook.keys(), playbook):
+    for play in playlist:
         if os.system(play) != 0:
             msg("Catched non zero exit status", f"ERROR in {play}")
-            # try_symlink(play, BLAME_LINK, msg)
+            cache_jobs(playlist[playlist.index(play):], CACHE)
             return False
-    if os.path.exists(BLAME_LINK):
-        msg("Continuation successful. Please remove the symlink.")
-        # os.remove(BLAME_LINK)
     return True
 
 

@@ -13,10 +13,10 @@ setup_venv () {
 	poetry add --group=dev pytest@latest &&
 	poetry update &&
 	poetry install &&
-	if ! grep -q "tool.poetry.scripts" pyproject.toml; then
-		echo "\n[tool.poetry.scripts]" >> pyproject.toml
-		echo "$PRJNAME = \"${PRJNAME}.main:cli\"" >> pyproject.toml
-	fi
+	# if ! grep -q "tool.poetry.scripts" pyproject.toml; then
+	# 	echo "\n[tool.poetry.scripts]" >> pyproject.toml
+	# 	echo "$PRJNAME = \"${PRJNAME}.main:cli\"" >> pyproject.toml
+	# fi
 }
 
 setup_clean () {

@@ -16,6 +16,7 @@ BIN_DIR = f'./{NAME}.d'
 CACHE = f'{APP}{CACHE_SUFFIX}'
 
 DEBUG = False
+# DEBUG = True
 
 
 # ---( Functions for Test Environment Setup and Teardown )---------------------

@@ -109,3 +109,9 @@ class TestIntegration:
         assert main(APP) is True
         # .. and the cache file to be removed
         assert not os.path.exists(CACHE)
+
+    def test_missing_dependency(self, _files_and_content):
+        _files_and_content['a.sh'] =\
+            f'#!/bin/bash\n#{KEYPHRASE} non-existent.sh  \necho a\n'
+        write_to_files(_files_and_content)
+        assert main(APP) is False

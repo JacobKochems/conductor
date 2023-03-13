@@ -59,3 +59,10 @@ For example, a shell scripts' dependency declaration might look like this:
 echo "Hello Conductor!"
 ```
 4. Profit.  ..um, I mean run it via `./setup` or invoke it from wherever.
+Conductor automatically sets executable permissions for all shell and Python
+scripts in the designated directory and its subdirectories. It then generates
+an ordered list of scripts and runs them. If an error occurs during script
+execution, the remaining jobs, including the offending one, are cached to
+the file `<script-name>-job.cache` and the script exits with a non-zero exit
+status. A subsequent run of conductor will try to finish the cached jobs if it
+finds the cache file in its directory.

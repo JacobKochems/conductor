@@ -9,6 +9,31 @@ Caution
 This is a very early version. Something I cobbled together on a weekend.
 It has seen very little real application yet. **Use it at your own risk.**
 
+Features
+--------
+ * **Resolve dependencies:** Conductor automatically resolves
+dependencies declared within script files, ensuring that scripts are executed
+in the correct order.
+
+ * **Easy setup:** Simply create a directory for your conductor script and any
+dependent scripts, add the appropriate `!depends_on:` lines to your scripts,
+and you're ready to go.
+
+ * **Portable:** Conductor is a simple Python script that can be run on any
+platform with Python 3.7 or higher installed, making it easy to integrate into
+your existing setup.
+
+ * **Caching:** Conductor can cache the list of jobs to be executed, allowing
+you to easily resume a partially completed run if one of the scripts return
+with a non-zero exit status
+
+ * **Flexible:** Conductor can be used for any type of executable, be it a
+shell script, a Python scripts or a binary
+
+ * **Set executable permission:** Automatically set the file owners executable
+permission (`u+x`) for all `*.sh` and `*.py` files to allow for a seamless
+bootstrap process right after you `git clone` from your repository
+
 Installation
 ------------
 **General**

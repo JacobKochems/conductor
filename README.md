@@ -19,8 +19,8 @@ dependent scripts, add the appropriate `!depends_on:` lines to your scripts,
 and you're ready to go.
 
  * **Portable:** Conductor is a simple Python script that can be run on any
-platform with Python 3.7 or higher installed, making it easy to integrate into
-your existing setup.
+platform with Python 3.9 (possibly 3.7, but untested yet) or higher installed,
+making it easy to integrate into your existing setup.
 
  * **Caching:** Conductor can cache the list of jobs to be executed, allowing
 you to easily resume a partially completed run if one of the scripts return

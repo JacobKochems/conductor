@@ -27,7 +27,7 @@ you to easily resume a partially completed run if one of the scripts return
 with a non-zero exit status
 
  * **Flexible:** Conductor can be used for any type of executable, be it a
-shell script, a Python scripts or a binary
+shell script, a Python script or a binary
 
  * **Set executable permission:** Automatically set the file owners executable
 permission (`u+x`) for all `*.sh` and `*.py` files to allow for a seamless

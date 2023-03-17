@@ -106,7 +106,8 @@ def main(this) -> bool:
     else:
         try:
             playlist = get_playlist(playbook.keys(), playbook)
-        except KeyError:
+        except KeyError as key:
+            msg(f"Could not resolve dependency {key}", "ERROR")
             return False
 
     for play in playlist:
@@ -114,6 +115,7 @@ def main(this) -> bool:
             msg("Catched non zero exit status", f"ERROR in {play}")
             cache_jobs(playlist[playlist.index(play):], CACHE)
             msg(f"Remaining jobs written to: {CACHE}", "INFO")
+            msg(f"Fix '{play}' and run again to resume", "INFO")
             return False
     return True
 

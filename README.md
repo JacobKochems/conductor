@@ -29,10 +29,6 @@ with a non-zero exit status
  * **Flexible:** Conductor can be used for any type of executable, be it a
 shell script, a Python script or a binary
 
- * **Set executable permission:** Automatically set the file owner's executable
-permission (`u+x`) for all `*.sh` and `*.py` files to allow for a seamless
-bootstrap process right after you `git clone` from your repository
-
 Installation
 ------------
 **General**

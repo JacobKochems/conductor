@@ -6,14 +6,17 @@
 
 import os
 import shutil
+import stat
 import pytest
 from conductor import KEYPHRASE, CACHE_SUFFIX, get_files_recursively, \
-                      set_exec_permissions, get_playbook, get_playlist, main
+                      get_playbook, get_playlist, main
 
 NAME = 'conductor'
 APP = f'./{NAME}'
 BIN_DIR = f'./{NAME}.d'
 CACHE = f'{APP}{CACHE_SUFFIX}'
+
+BIN_SUFFIX = ['.sh', '.py']
 
 DEBUG = False
 # DEBUG = True
@@ -26,6 +29,15 @@ def write_to_files(files_and_content: dict[str, str]):
         path = f'{BIN_DIR}/{file}'
         with open(path, "w") as f:
             f.write(content)
+
+
+def set_exec_permissions(directory) -> int:
+    count = 0
+    for file in get_files_recursively(directory):
+        if any(file.endswith(s) for s in BIN_SUFFIX):
+            os.chmod(file, os.stat(file).st_mode | stat.S_IEXEC)
+            count += 1
+    return count
 
 
 def delete_files_in(dir: str):
@@ -48,6 +60,7 @@ def files_and_content():
 @pytest.fixture(autouse=True, scope='class')
 def write_scripts(files_and_content):
     write_to_files(files_and_content)
+    set_exec_permissions(BIN_DIR)
     yield
     if not DEBUG:
         delete_files_in(BIN_DIR)
@@ -69,9 +82,6 @@ class TestUnits:
         assert f'{BIN_DIR}/a' in files
         # check for expected number of items
         assert len(files) == len(files_and_content)
-
-    def test_set_exec_permissions(self, files_and_content):
-        assert set_exec_permissions(BIN_DIR) == len(files_and_content) - 1
 
     def test_get_playbook(self):
         assert f'{BIN_DIR}/d.sh' in get_playbook(BIN_DIR)[f'{BIN_DIR}/a.sh']

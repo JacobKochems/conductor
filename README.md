@@ -57,10 +57,8 @@ echo "Hello Conductor!"
 4. Profit.  ..um, I mean run it via `./setup` or invoke it from wherever you
 want.
 
-Conductor automatically sets executable permissions for all shell and Python
-scripts in the designated directory and its subdirectories. It then generates
-an ordered list of scripts and runs them. If an error occurs during script
-execution, the remaining jobs, including the offending one, are cached to
-the file `<scriptname>-job.cache` and the script exits with a non-zero exit
-status. A subsequent run of conductor will try to finish the cached jobs if it
-finds the cache file in its directory.
+Conductor generates an ordered list of scripts and runs them. If an error
+occurs during script execution, the remaining jobs, including the offending
+one, are cached to the file `<scriptname>-job.cache` and conductor exits with
+a non-zero exit status. If it finds the cache file on a subsequent run it will
+try to finish the cached jobs.

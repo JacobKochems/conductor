@@ -104,7 +104,10 @@ def main(this) -> bool:
         playlist = load_cache(CACHE)
         os.remove(CACHE)
     else:
-        playlist = get_playlist(playbook.keys(), playbook)
+        try:
+            playlist = get_playlist(playbook.keys(), playbook)
+        except KeyError:
+            return False
 
     for play in playlist:
         if os.system(play) != 0:

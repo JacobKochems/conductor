@@ -97,6 +97,7 @@ def load_cache(filename):
 
 def main(this) -> bool:
     CACHE = f'{this}{CACHE_SUFFIX}'
+    MAX_WIDTH = 80
     msg = Msg(this)
 
     playbook = get_playbook(this+'.d')
@@ -110,7 +111,13 @@ def main(this) -> bool:
             msg(f"Could not resolve dependency {key}", "ERROR")
             return False
 
+    try:
+        columns, _ = os.get_terminal_size()
+    except OSError:
+        columns = MAX_WIDTH
+    width = min(columns, MAX_WIDTH)
     for play in playlist:
+        print(f"\n--- {os.path.basename(play)} ---".ljust(width, "-"))
         if os.system(play) != 0:
             msg("Catched non zero exit status", f"ERROR in {play}")
             cache_jobs(playlist[playlist.index(play):], CACHE)

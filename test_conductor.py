@@ -95,33 +95,43 @@ class TestUnits:
 
 class TestIntegration:
     @pytest.fixture()
-    def _files_and_content(self, files_and_content):
-        return files_and_content.copy()
+    def edit_job(self, files_and_content):
+        content_of_files = files_and_content.copy()
+
+        def inner(job: str, content: str, append=False):
+            if append:
+                content_of_files[job] += content
+            else:
+                content_of_files[job] = content
+            write_to_files(content_of_files)
+        return inner
 
     def test_all_jobs_complete(self):
         assert main(APP) is True
 
-    def test_a_job_fails(self, _files_and_content):
+    def test_a_job_fails_then_passes(self, edit_job):
         # make a job fail
-        _files_and_content['a.sh'] += 'exit 1\n'
-        write_to_files(_files_and_content)
+        edit_job('a.sh', 'exit 1\n', append=True)
+
         # first encounter of failed job should result in abort ..
         assert main(APP) is False
         # .. and produce a cache file of remaining jobs
         assert os.path.exists(CACHE)
+
         # if failed job continues to fail we expect the same outcome
         assert main(APP) is False
         assert os.path.exists(CACHE)
+
         # make the failed job pass trivially
-        _files_and_content['a.sh'] = ''
-        write_to_files(_files_and_content)
+        edit_job('a.sh', '')
+
         # now we expect success for all remaining jobs ..
         assert main(APP) is True
         # .. and the cache file to be removed
         assert not os.path.exists(CACHE)
 
-    def test_missing_dependency(self, _files_and_content):
-        _files_and_content['a.sh'] =\
-            f'#!/bin/bash\n#{KEYPHRASE} non-existent.sh  \necho a\n'
-        write_to_files(_files_and_content)
+    def test_missing_dependency(self, edit_job):
+        edit_job(
+            'a.sh',
+            f'#!/bin/bash\n#{KEYPHRASE} non-existent.sh  \necho a\n')
         assert main(APP) is False

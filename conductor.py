@@ -30,8 +30,8 @@ EXCLUSION_PATTERN = ["##", "README", "readme"]
 
 # this matches only at the end of a filename
 EXCLUSION_SUFFIX = [
-    "~", ".md", ".lst", ".off", ".false", ".disabled",
-    ".archive", ".archived", ".deprecated"]
+    "~", ".md", ".lst", ".archived",
+    ".deprecated", ".disabled", ".todo"]
 
 KEYPHRASE = '!depends_on:'
 CACHE_SUFFIX = '-job.cache'

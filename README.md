@@ -38,7 +38,7 @@ curl -fLo /your/custom/path https://raw.githubusercontent.com/JacobKochems/condu
 **yadm** - as a [bootstraper](https://yadm.io/docs/bootstrap) for the yadm
 dotfile manager
 ```shell
-curl -fLo ~/.config/yadm/bootstrap https://raw.githubusercontent.com/JacobKochems/conductor/main/conductor.py && chmod a+x ~/.config/yadm/bootstrap && mkdir ~/.config/yadm/bootstrap.d
+curl -fLo ~/.config/yadm/bootstrap https://raw.githubusercontent.com/JacobKochems/conductor/main/conductor.py && chmod a+x ~/.config/yadm/bootstrap && mkdir -p ~/.config/yadm/bootstrap.d
 ```
 
 Usage
